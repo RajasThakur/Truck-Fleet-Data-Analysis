@@ -1,0 +1,28 @@
+**************** Transfer data from Local PC to CLoudera VM ********************
+
+scp D:\geolocation.txt training@192.168.184.128:/home/training/test 
+scp D:\avgmileage.txt training@192.168.184.128:/tmp
+scp D:\drivemileage.txt training@192.168.184.128:/tmp 
+scp D:\riskfactor.txt training@192.168.184.128:/tmp
+scp D:\truckmileage.txt training@192.168.184.128:/tmp
+scp D:\trucks.txt training@192.168.184.128:/tmp
+
+
+**************** Creating table in hive ********************
+CREATE TABLE geolocation_stage  ( truckid string,  driverid string,  event string,  latitude DOUBLE,  longitude DOUBLE,  city string,  state string,  velocity BIGINT,  event_ind BIGINT,  idling_ind BIGINT )  ROW FORMAT DELIMITED  FIELDS TERMINATED BY '\t' STORED AS TEXTFILE  TBLPROPERTIES ("skip.header.line.count"="1"); 
+CREATE TABLE geolocation_avgmileage  ( truckid string, avgmpg DOUBLE)  ROW FORMAT DELIMITED  FIELDS TERMINATED BY '\t' STORED AS TEXTFILE  TBLPROPERTIES ("skip.header.line.count"="1"); 
+CREATE TABLE geolocation_drivemileage  ( driverid string, totmiles DOUBLE)  ROW FORMAT DELIMITED  FIELDS TERMINATED BY '\t' STORED AS TEXTFILE  TBLPROPERTIES ("skip.header.line.count"="1"); 
+CREATE TABLE geolocation_truckmileage  ( truckid string, driverid string, rdate string, miles DOUBLE, gas DOUBLE, mpg DOUBLE)  ROW FORMAT DELIMITED  FIELDS TERMINATED BY '\t' STORED AS TEXTFILE  TBLPROPERTIES ("skip.header.line.count"="1"); 
+CREATE TABLE geolocation_riskfactor  ( driverid string, events BIGINT, totmiles DOUBLE, riskfactor DOUBLE)  ROW FORMAT DELIMITED  FIELDS TERMINATED BY '\t' STORED AS TEXTFILE  TBLPROPERTIES ("skip.header.line.count"="1"); 
+CREATE TABLE geolocation_trucks  ( driverid string, truckid string, model string, jun13_miles BIGINT, jun13_gas BIGINT, may13_miles BIGINT, may13_gas BIGINT, apr13_miles BIGINT, apr13_gas BIGINT, mar13_miles BIGINT, mar13_gas BIGINT, feb13_miles BIGINT, feb13_gas BIGINT, jan13_miles BIGINT, jan13_gas BIGINT, dec12_miles BIGINT, dec12_gas BIGINT, dec12_gas2 BIGINT, nov12_miles BIGINT, nov12_gas BIGINT, oct12_miles BIGINT)  ROW FORMAT DELIMITED  FIELDS TERMINATED BY '\t' STORED AS TEXTFILE  TBLPROPERTIES ("skip.header.line.count"="1"); 
+
+
+
+**************** Load data to hive ********************
+
+LOAD DATA LOCAL INPATH '/tmp/geolocation.txt' INTO TABLE geolocation_stage; 
+LOAD DATA LOCAL INPATH '/tmp/avgmileage.txt' INTO TABLE geolocation_avgmileage; 
+LOAD DATA LOCAL INPATH '/tmp/drivemileage.txt' INTO TABLE geolocation_drivemileage; 
+LOAD DATA LOCAL INPATH '/tmp/truckmileage.txt' INTO TABLE geolocation_truckmileage; 
+LOAD DATA LOCAL INPATH '/tmp/riskfactor.txt' INTO TABLE geolocation_riskfactor; 
+LOAD DATA LOCAL INPATH '/tmp/trucks.txt' INTO TABLE geolocation_trucks;
